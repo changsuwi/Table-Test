@@ -5,31 +5,93 @@ import {
   CreditCardFirstHeaderLabel,
 } from "./constants/creditCard.constants";
 import { getValue } from "./services/utils";
-import { CreditCard } from "./types/creditCardModel";
-
-const Row = ({ creditCard }: { creditCard: CreditCard }) => {
-  return (
-    <tr key={creditCard.name} className="border-slate-400 border">
-      <td className="sticky left-0 p-2 bg-slate-200">
-        <figure className="w-[200px] h-[150px]">
-          <img
-            src={creditCard.image}
-            alt={creditCard.name}
-            className="h-full object-cover"
-          />
-        </figure>
-        <span>{creditCard.name}</span>
-      </td>
-      {CreditCardTableHeader.map((header) => (
-        <td className="border-slate-400 border-l p-0" key={header.key}>
-          {getValue(header.key, creditCard)}
-        </td>
-      ))}
-    </tr>
-  );
-};
+import { VariableSizeList as List } from "react-window";
+import { useEffect, useRef } from "react";
 
 export default function CreditCardTable() {
+  const listRef = useRef<List>(null);
+  const rowHeights = useRef<Record<number, number>>({});
+  
+  function getRowHeight(index: number) {
+    return rowHeights.current[index] || 41;
+  }
+
+  function setRowHeight(index: number, size: number) {
+    rowHeights.current = { ...rowHeights.current, [index]: size };
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(index);
+    }
+  }
+
+  const Row = ({
+    index,
+    style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
+  }) => {
+    const rowRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (rowRef.current) {
+        setRowHeight(index, rowRef.current.clientHeight);
+      }
+      // eslint-disable-next-line
+    }, [rowRef]);
+
+    if (index === 0) {
+      return (
+        <div className="flex" ref={rowRef}>
+          <div
+            className="w-[300px] min-w-[300px] sticky left-0 bg-slate-200 p-2 border-slate-400 border-b"
+            role="columnheader"
+          >
+            {CreditCardFirstHeaderLabel}
+          </div>
+          {CreditCardTableHeader.map((header) => (
+            <div
+              className="w-[300px] min-w-[300px] border-slate-400 border-l border-b p-2"
+              key={header.key}
+              role="columnheader"
+            >
+              {header.display}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (!data) {
+      return;
+    }
+
+    const creditCard = data[index - 1];
+    return (
+      <div style={style}>
+        <div className="flex border-slate-400 " ref={rowRef}>
+          <div className="sticky left-0 p-2 bg-slate-200 flex flex-col items-center w-[300px] min-w-[300px] border-slate-400 border-b">
+            <figure className="w-[200px] h-[150px] min-w-[200px] min-h-[150px]">
+              <img
+                src={creditCard.image}
+                alt={creditCard.name}
+                className="h-full object-cover"
+              />
+            </figure>
+            <span>{creditCard.name}</span>
+          </div>
+          {CreditCardTableHeader.map((header) => (
+            <div
+              className="border-slate-400 border-l border-b p-2 flex-1 w-[300px] min-w-[300px]"
+              key={header.key}
+            >
+              {getValue(header.key, creditCard)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["creditCard"],
     queryFn: getCreditCards,
@@ -44,29 +106,18 @@ export default function CreditCardTable() {
   }
 
   return (
-    <table className="table-fixed text-center bg-slate-200 border border-slate-400" role="grid">
-      <thead className="border border-slate-400">
-        <tr>
-          <th className="w-[300px] min-w-[300px] sticky left-0 bg-slate-200 p-0" scope="col">
-            {CreditCardFirstHeaderLabel}
-          </th>
-          {CreditCardTableHeader.map((header) => (
-            <th
-              className="w-[300px] min-w-[300px] border-slate-400 border-l p-0"
-              key={header.key}
-              scope="col"
-            >
-              {header.display}
-            </th>
-          ))}
-        </tr>
-      </thead>
-
-      <tbody>
-        {data?.map((creditCard, index) => (
-         <Row creditCard={creditCard} key={index} />
-        ))}
-      </tbody>
-    </table>
+    <div className="bg-slate-200 border border-slate-400">
+      {data && (
+        <List
+          height={600}
+          itemCount={data.length + 1}
+          itemSize={getRowHeight}
+          width={"100%"}
+          ref={listRef}
+        >
+          {Row}
+        </List>
+      )}
+    </div>
   );
 }
