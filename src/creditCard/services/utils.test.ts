@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { CreditCard } from '../types/creditCardDTO';
 import { getValue } from './utils';
 import { HeaderType } from '../constants/creditCard.constants';
+import { CreditCard } from '../types/creditCard.model';
 
 describe('getValue', () => {
   const mockCreditCard: CreditCard = {

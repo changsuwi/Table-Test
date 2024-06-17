@@ -1,12 +1,19 @@
 export enum HeaderType {
-  score,
-  isBusinessCard,
-  welcomeOffer,
-  rewardsCurrency,
-  merchantSystem,
+  score = "score",
+  isBusinessCard = "isBusinessCard",
+  welcomeOffer = "welcomeOffer",
+  rewardsCurrency = "rewardsCurrency",
+  merchantSystem = "merchantSystem",
 }
+
 export const CreditCardFirstHeaderLabel = "Credit card";
-export const CreditCardTableHeader: { display: string; key: HeaderType }[] = [
+
+interface CreditCardTableHeaderItem {
+  display: string;
+  key: HeaderType;
+}
+
+export const CreditCardTableHeader: CreditCardTableHeaderItem[] = [
   {
     display: "Recommended credit score",
     key: HeaderType.score,

@@ -2,8 +2,8 @@ import {
   GetCreditCardsResponseDTO,
   CreditCardResponseDTO,
   GetCreditCardsResponseSchema,
-} from "../types/creditCardDTO";
-import { CreditCard } from "../types/creditCardModel";
+} from "../types/creditCard.dto";
+import { CreditCard } from "../types/creditCard.model";
 
 export const validationResult = (data: GetCreditCardsResponseDTO) =>
   GetCreditCardsResponseSchema.parse(data);

@@ -1,5 +1,5 @@
 import { HeaderType } from "../constants/creditCard.constants";
-import { CreditCard } from "../types/creditCardModel";
+import { CreditCard } from "../types/creditCard.model";
 
 export function getValue(
   type: HeaderType,
@@ -9,16 +9,16 @@ export function getValue(
     case HeaderType.score:
       return creditCard.score;
     case HeaderType.isBusinessCard:
-      return creditCard.isBusinessCard === 1
-        ? "Yes"
-        : creditCard.isBusinessCard === 0
-        ? "No"
-        : "";
+      if (creditCard.isBusinessCard === 1) return "Yes";
+      if (creditCard.isBusinessCard === 0) return "No";
+      return undefined;
     case HeaderType.welcomeOffer:
       return creditCard.welcomeOffer;
     case HeaderType.rewardsCurrency:
       return creditCard.rewardsCurrency;
     case HeaderType.merchantSystem:
       return creditCard.merchantSystem;
+    default:
+      return undefined;
   }
 }

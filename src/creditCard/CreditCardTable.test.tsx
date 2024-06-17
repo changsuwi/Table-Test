@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/vitest';
 import { useQuery } from '@tanstack/react-query';
 import CreditCardTable from './CreditCardTable';
 import { CreditCardFirstHeaderLabel, CreditCardTableHeader } from './constants/creditCard.constants';
-import { CreditCard } from './types/creditCardModel';
+import { CreditCard } from './types/creditCard.model';
 
 vi.mock('@tanstack/react-query', () => ({
   useQuery: vi.fn(),

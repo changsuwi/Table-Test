@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { creditCardMapper, getCreditCards } from './creditCard.api';
-import { CreditCardResponseDTO } from '../types/creditCardDTO';
+import { CreditCardResponseDTO } from '../types/creditCard.dto';
 
 describe('creditCardMapper', () => {
   it('should map CreditCardResponseDTO to CreditCard correctly', () => {
