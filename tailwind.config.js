@@ -7,10 +7,16 @@ export default {
   theme: {
     extend: {
       width: {
-        'th': '300px'
-      }
+        'table-cell': '220px',
+        'table-row': '1320px',
+      },
+      maxWidth: {
+        'table': '1322px',
+      },
+      height: {
+        'table': '602px',
+      },
     },
   },
   plugins: [],
 }
-

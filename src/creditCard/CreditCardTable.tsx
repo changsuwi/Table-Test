@@ -3,22 +3,26 @@ import { getCreditCards } from "./services/creditCard.api";
 import {
   CreditCardTableHeader,
   CreditCardFirstHeaderLabel,
+  HeaderType,
 } from "./constants/creditCard.constants";
 import { getValue } from "./services/utils";
 import { VariableSizeList as List } from "react-window";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useCallback } from "react";
 import { CreditCard } from "./types/creditCard.model";
+import clsx from "clsx";
 
 const Row = memo(
   ({
     index,
     style,
     creditCards,
+    isLastRow,
     setRowHeight,
   }: {
     index: number;
     style: React.CSSProperties;
     creditCards: CreditCard[];
+    isLastRow: boolean;
     setRowHeight: (index: number, size: number) => void;
   }) => {
     const rowRef = useRef<HTMLDivElement>(null);
@@ -27,21 +31,23 @@ const Row = memo(
       if (rowRef.current) {
         setRowHeight(index, rowRef.current.clientHeight);
       }
-      // eslint-disable-next-line
-    }, [rowRef]);
+    }, [index, setRowHeight]);
 
     if (index === 0) {
       return (
-        <div className="flex w-[1800px]" ref={rowRef}>
+        <div className="flex w-table-row" ref={rowRef}>
           <div
-            className="w-[300px] sticky left-0 bg-slate-200 p-2 border-slate-400 border-b border-r"
+            className="w-table-cell sticky left-0 bg-slate-200 p-2 border-slate-400 border-b border-r"
             role="columnheader"
           >
             {CreditCardFirstHeaderLabel}
           </div>
           {CreditCardTableHeader.map((header) => (
             <div
-              className="w-[300px] border-slate-400 border-r border-b p-2"
+              className={clsx(
+                "w-table-cell border-slate-400 border-r border-b p-2",
+                header.key === HeaderType.merchantSystem && "border-r-0"
+              )}
               key={header.key}
               role="columnheader"
             >
@@ -59,8 +65,13 @@ const Row = memo(
     const creditCard = creditCards[index - 1];
     return (
       <div style={style}>
-        <div className="flex w-[1800px]" ref={rowRef}>
-          <div className="sticky left-0 p-2 bg-slate-200 flex flex-col items-center w-[300px] border-slate-400 border-b border-r">
+        <div className="flex w-table-row" ref={rowRef}>
+          <div
+            className={clsx(
+              "sticky left-0 p-2 bg-slate-200 flex flex-col items-center w-table-cell border-slate-400 border-b border-r",
+              isLastRow && "border-b-0",
+            )}
+          >
             <figure className="w-[200px] h-[150px] min-w-[200px] min-h-[150px]">
               <img
                 src={creditCard.image}
@@ -72,7 +83,11 @@ const Row = memo(
           </div>
           {CreditCardTableHeader.map((header) => (
             <div
-              className="border-slate-400 border-r border-b p-2 flex-1 w-[300px]"
+              className={clsx(
+                "border-slate-400 border-r border-b p-2 flex-1 w-table-cell",
+                header.key === HeaderType.merchantSystem && "border-r-0",
+                isLastRow && "border-b-0"
+              )}
               key={header.key}
             >
               {getValue(header.key, creditCard)}
@@ -92,28 +107,28 @@ export default function CreditCardTable() {
     data: creditCards,
     isLoading,
     isError,
-  } = useQuery({
+  } = useQuery<CreditCard[]>({
     queryKey: ["creditCard"],
     queryFn: getCreditCards,
   });
 
-  function getRowHeight(index: number) {
+  const getRowHeight = useCallback((index: number) => {
     return rowHeights.current[index] || 41;
-  }
+  }, []);
 
-  function setRowHeight(index: number, size: number) {
+  const setRowHeight = useCallback((index: number, size: number) => {
     rowHeights.current = { ...rowHeights.current, [index]: size };
     if (listRef.current) {
       listRef.current.resetAfterIndex(index);
     }
-  }
+  }, []);
 
   if (isError) {
-    return <span>Error loading data</span>;
+    return <span className="text-red-500">Error loading data</span>;
   }
 
   if (isLoading) {
-    return <span>Loading...</span>;
+    return <span className="text-blue-500">Loading...</span>;
   }
 
   return (
@@ -132,6 +147,7 @@ export default function CreditCardTable() {
               style={style}
               creditCards={creditCards}
               setRowHeight={setRowHeight}
+              isLastRow={index === creditCards.length}
             />
           )}
         </List>
