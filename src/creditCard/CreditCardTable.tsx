@@ -11,7 +11,48 @@ import { memo, useEffect, useRef, useCallback } from "react";
 import { CreditCard } from "./types/creditCard.model";
 import clsx from "clsx";
 
-const Row = memo(
+const HeaderRow = memo(
+  ({
+    setRowHeight,
+  }: {
+    setRowHeight: (index: number, size: number) => void;
+  }) => {
+    const rowRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (rowRef.current) {
+        setRowHeight(0, rowRef.current.clientHeight);
+      }
+    }, [setRowHeight]);
+
+    return (
+      <div className="flex w-table-row" ref={rowRef} role="row">
+        <div
+          className="w-table-cell sticky left-0 bg-slate-200 p-2 border-slate-400 border-b border-r"
+          role="columnheader"
+          aria-label={CreditCardFirstHeaderLabel}
+        >
+          {CreditCardFirstHeaderLabel}
+        </div>
+        {CreditCardTableHeader.map((header) => (
+          <div
+            className={clsx(
+              "w-table-cell border-slate-400 border-r border-b p-2",
+              header.key === HeaderType.merchantSystem && "border-r-0"
+            )}
+            key={header.key}
+            role="columnheader"
+            aria-label={header.display}
+          >
+            {header.display}
+          </div>
+        ))}
+      </div>
+    );
+  }
+);
+
+const DataRow = memo(
   ({
     index,
     style,
@@ -33,44 +74,20 @@ const Row = memo(
       }
     }, [index, setRowHeight]);
 
-    if (index === 0) {
-      return (
-        <div className="flex w-table-row" ref={rowRef}>
-          <div
-            className="w-table-cell sticky left-0 bg-slate-200 p-2 border-slate-400 border-b border-r"
-            role="columnheader"
-          >
-            {CreditCardFirstHeaderLabel}
-          </div>
-          {CreditCardTableHeader.map((header) => (
-            <div
-              className={clsx(
-                "w-table-cell border-slate-400 border-r border-b p-2",
-                header.key === HeaderType.merchantSystem && "border-r-0"
-              )}
-              key={header.key}
-              role="columnheader"
-            >
-              {header.display}
-            </div>
-          ))}
-        </div>
-      );
-    }
-
     if (!creditCards) {
       return null;
     }
 
     const creditCard = creditCards[index - 1];
     return (
-      <div style={style}>
+      <div style={style} role="row">
         <div className="flex w-table-row" ref={rowRef}>
           <div
             className={clsx(
               "sticky left-0 p-2 bg-slate-200 flex flex-col items-center w-table-cell border-slate-400 border-b border-r",
-              isLastRow && "border-b-0",
+              isLastRow && "border-b-0"
             )}
+            role="cell"
           >
             <figure className="w-[200px] h-[150px] min-w-[200px] min-h-[150px]">
               <img
@@ -89,6 +106,7 @@ const Row = memo(
                 isLastRow && "border-b-0"
               )}
               key={header.key}
+              role="cell"
             >
               {getValue(header.key, creditCard)}
             </div>
@@ -132,7 +150,11 @@ export default function CreditCardTable() {
   }
 
   return (
-    <div className="bg-slate-200 border border-slate-400">
+    <div
+      className="bg-slate-200 border border-slate-400"
+      role="table"
+      aria-label="Credit Card Table"
+    >
       {creditCards && (
         <List
           height={600}
@@ -141,15 +163,20 @@ export default function CreditCardTable() {
           width={"100%"}
           ref={listRef}
         >
-          {({ index, style }) => (
-            <Row
-              index={index}
-              style={style}
-              creditCards={creditCards}
-              setRowHeight={setRowHeight}
-              isLastRow={index === creditCards.length}
-            />
-          )}
+          {({ index, style }) => {
+            if (index === 0) {
+              return <HeaderRow setRowHeight={setRowHeight} />;
+            }
+            return (
+              <DataRow
+                index={index}
+                style={style}
+                creditCards={creditCards}
+                setRowHeight={setRowHeight}
+                isLastRow={index === creditCards.length}
+              />
+            );
+          }}
         </List>
       )}
     </div>
