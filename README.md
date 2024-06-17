@@ -1,39 +1,41 @@
-# React + TypeScript + Vite
+# Project Documentation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+This project is a React application using TypeScript and Vite. It includes a credit card comparison table with data fetched from an API. The project uses various libraries and tools for development, testing, and styling.
 
-Currently, two official plugins are available:
+## Key Technologies
+- **React**: UI library
+- **TypeScript**: Type safety
+- **Vite**: Build tool
+- **Tailwind CSS**: Utility-first CSS framework
+- **React Query**: Data fetching
+- **React Window**: Virtualized lists
+- **Zod**: Schema validation
+- **Vitest**: Testing framework
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Project Structure
+- **src/**: Contains the main application code.
+  - **App.tsx**: Main application component.
+  - **main.tsx**: Entry point of the application.
+  - **index.css**: Global styles.
+  - **creditCard/**: Contains components, services, and types related to credit cards.
+    - **CreditCardTable.tsx**: Component for displaying the credit card table.
+    - **services/**: API and utility functions.
+    - **types/**: Type definitions and schemas.
+    - **constants/**: Constants used in the credit card components.
+- **public/**: Static assets.
+- **tests/**: Test files.
 
-## Expanding the ESLint configuration
+## Scripts
+Defined in `package.json`:
+- **dev**: Starts the development server.
+- **build**: Builds the application for production.
+- **test**: Runs the test suite.
+- **lint**: Runs the linter.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Running the Project
+1. **Install dependencies**: `npm install`
+2. **Start development server**: `npm run dev`
+3. **Build for production**: `npm run build`
+4. **Run tests**: `npm run test`
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
-
-## Test Cases
-- API response unknown properties, how to handle it?
-- Column overflow issue, ex. Welcome offer is too long
-- RWD
-- Table performance issue
-  - if API response is too large, how to handle it?
-  - if API response is too large, how to load image issue ?
-- If API response leak some attribute, how to render it ?
